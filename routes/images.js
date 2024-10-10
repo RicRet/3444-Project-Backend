@@ -5,9 +5,9 @@ const router = express.Router();
 
 // Route to insert an image
 router.post('/images', async (req, res) => {
-  const { imageFile } = req.body;
+  const { imageUrl } = req.body; // Changed to imageUrl
   try {
-    const newImage = await insertImage(imageFile);
+    const newImage = await insertImage(imageUrl); // Pass the image URL to insertImage
     res.status(201).json(newImage);
   } catch (error) {
     res.status(500).json({ message: 'Error inserting image' });
@@ -15,7 +15,7 @@ router.post('/images', async (req, res) => {
 });
 
 // Route to remove an image by imageId
-router.delete('imageId', async (req, res) => {
+router.delete('/images/:imageId', async (req, res) => { // Added '/images' prefix and colon before imageId
   const { imageId } = req.params;
   try {
     const deletedImage = await removeImage(imageId);
