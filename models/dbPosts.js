@@ -3,7 +3,7 @@ const pool = require('../pool'); // Import the PostgreSQL connection pool
 // Function to insert a new db post
 const insertDbPost = async (imageId, heading, content, ownerId, edited = false) => {
   const query = `
-    INSERT INTO db_posts (image_id, heading, content, owner_id, edited)
+    INSERT INTO eagleeye_schema.db_posts (image_id, heading, content, owner_id, edited)
     VALUES ($1, $2, $3, $4, $5)
     RETURNING *;`;
     
@@ -21,7 +21,7 @@ const insertDbPost = async (imageId, heading, content, ownerId, edited = false) 
 // Function to remove a db post by post_id
 const removeDbPost = async (postId) => {
   const query = `
-    DELETE FROM db_posts
+    DELETE FROM eagleeye_schema.db_posts
     WHERE post_id = $1
     RETURNING *;`;
 
@@ -38,7 +38,7 @@ const removeDbPost = async (postId) => {
 async function getRecentDbPosts(limit = 10) {
   const query = `
     SELECT *
-    FROM db_posts
+    FROM eagleeye_schema.db_posts
     ORDER BY post_date DESC
     LIMIT $1;
   `;

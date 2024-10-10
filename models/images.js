@@ -3,7 +3,7 @@ const pool = require('../pool');
 const insertImage = async (imageFile) => {
   try {
     const result = await query(
-      `INSERT INTO images (image_file) 
+      `INSERT INTO eagleeye_schema.images (image_file) 
        VALUES ($1) RETURNING *`,
       [imageFile]
     );
@@ -17,7 +17,7 @@ const insertImage = async (imageFile) => {
 const removeImage = async (imageId) => {
     try {
       const result = await query(
-        `DELETE FROM images WHERE image_id = $1 RETURNING *`,
+        `DELETE FROM eagleeye_schema.images WHERE image_id = $1 RETURNING *`,
         [imageId]
       );
       return result.rows[0]; // Returns the deleted image data, or null if no image was found
