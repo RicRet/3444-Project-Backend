@@ -33,4 +33,16 @@ router.delete('/:postId', async (req, res) => {
   }
 });
 
+router.get('/recent', async (req, res) => {
+  const limit = parseInt(req.query.limit) || 10; // Default to 10 posts
+
+  try {
+    const recentPosts = await getRecentDbPosts(limit);
+    res.status(200).json(recentPosts);
+  } catch (error) {
+    console.error('Error fetching recent db posts:', error);
+    res.status(500).json({ message: 'Error fetching recent db posts' });
+  }
+});
+
 module.exports = router;

@@ -34,7 +34,27 @@ const removeDbPost = async (postId) => {
   }
 };
 
+// Function to get the most recent posts
+async function getRecentDbPosts(limit = 10) {
+  const query = `
+    SELECT *
+    FROM db_posts
+    ORDER BY post_date DESC
+    LIMIT $1;
+  `;
+  const values = [limit];
+
+  try {
+    const result = await db.query(query, values);
+    return result.rows;
+  } catch (error) {
+    console.error('Error fetching recent db posts:', error);
+    throw error;
+  }
+}
+
 module.exports = {
   insertDbPost,
-  removeDbPost
+  removeDbPost,
+  getRecentDbPosts
 };
