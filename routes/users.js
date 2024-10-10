@@ -1,20 +1,28 @@
 const express = require('express');
+const bcrypt = require('bcrypt')
 const { insertUser, removeUser, authorizeUserLogin } = require('../models/users.js');
 
 const router = express.Router();
 
 // Route to insert a new user
-router.post('/', async (req, res) => { // No '/users' here
-  const { username, email, password, profilePictureId } = req.body;
+router.post('/', async (req, res) => {
+
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
   try {
     // Hash the password before inserting the user
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await insertUser(username, email, hashedPassword, profilePictureId);
+    console.log("it got to this shi atleast");
+    const newUser = await insertUser(username, email, hashedPassword);
     res.status(201).json(newUser);
   } catch (error) {
+    console.error('Error during user registration:', error);
     res.status(500).json({ message: 'Error inserting user' });
   }
 });
+
 
 // Route to remove a user by userId
 router.delete('/:userId', async (req, res) => { // No '/users' here

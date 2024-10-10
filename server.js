@@ -27,3 +27,4 @@ app.use('/api/sales', salesPostRoutes);
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+

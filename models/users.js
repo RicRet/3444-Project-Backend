@@ -2,19 +2,26 @@ const bcrypt = require('bcrypt');
 const pool = require('../pool.js');  // Shared database connection
 
 // Function to insert a new user into the database
-const insertUser = async (username, email, hashedPassword, profilePictureId) => {
+const insertUser = async (username, email, hashedPassword) => {
   try {
+    // Ensure the schema and table name are correct
     const result = await pool.query(
-      `INSERT INTO users (username, email, hashed_password, profile_picture_id) 
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [username, email, hashedPassword, profilePictureId]
+      `INSERT INTO eagleeye_schema.users (username, email, hashed_password) 
+       VALUES ($1, $2, $3) RETURNING *`,
+      [username, email, hashedPassword] // Pass the values here
     );
+
+    // Return the inserted user data
     return result.rows[0];
   } catch (error) {
-    console.error('Error inserting user:', error);
-    throw error;
+    // Improved error logging for debugging
+    console.error('Error inserting user:', error.message); // Log only the error message
+    throw error; // Re-throw the error to handle it elsewhere if needed
   }
 };
+
+
+
 
 // Function to remove a user from the database by user ID
 const removeUser = async (userId) => {
@@ -34,7 +41,7 @@ const removeUser = async (userId) => {
 const authorizeUserLogin = async (email, password) => {
   try {
     // Query the user by email
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const result = await pool.query('SELECT * FROM eagleeye_schema.users WHERE email = $1', [email]);
 
     if (result.rows.length === 0) {
       return { success: false, message: 'Email not found' };
