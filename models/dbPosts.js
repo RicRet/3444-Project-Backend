@@ -1,60 +1,32 @@
-const pool = require('../pool'); // Import the PostgreSQL connection pool
+const pool = require('../pool');
 
 // Function to insert a new db post
-const insertDbPost = async (imageId, heading, content, ownerId, edited = false) => {
-  const query = `
-    INSERT INTO eagleeye_schema.db_posts (image_id, heading, content, owner_id, edited)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING *;`;
-    
-  const values = [imageId, heading, content, ownerId, edited];
-
+const insertDbPost = async (heading, content, ownerId, imageUrl) => {
   try {
-    const result = await pool.query(query, values);
-    return result.rows[0]; // Return the newly inserted db post
-  } catch (err) {
-    console.error('Error inserting db post:', err);
-    throw err;
+    const result = await pool.query(
+      `INSERT INTO eagleeye_schema.db_posts (heading, content, owner_id, image_url) 
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [heading, content, ownerId, imageUrl]
+    );
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error inserting db post:', error);
+    throw error;
   }
 };
 
-// Function to remove a db post by post_id
-const removeDbPost = async (postId) => {
-  const query = `
-    DELETE FROM eagleeye_schema.db_posts
-    WHERE post_id = $1
-    RETURNING *;`;
-
+// Function to get recent db posts
+const getRecentDbPosts = async (limit) => {
   try {
-    const result = await pool.query(query, [postId]);
-    return result.rows[0]; // Return the deleted db post (if any)
-  } catch (err) {
-    console.error('Error removing db post:', err);
-    throw err;
-  }
-};
-
-// Function to get the most recent posts
-async function getRecentDbPosts(limit = 10) {
-  const query = `
-    SELECT *
-    FROM eagleeye_schema.db_posts
-    ORDER BY post_date DESC
-    LIMIT $1;
-  `;
-  const values = [limit];
-
-  try {
-    const result = await db.query(query, values);
-    return result.rows;
+    const result = await pool.query(
+      `SELECT * FROM eagleeye_schema.db_posts ORDER BY post_date DESC LIMIT $1`,
+      [limit]
+    );
+    return result.rows; // Ensure image_url is included
   } catch (error) {
     console.error('Error fetching recent db posts:', error);
     throw error;
   }
-}
-
-module.exports = {
-  insertDbPost,
-  removeDbPost,
-  getRecentDbPosts
 };
+
+module.exports = { insertDbPost, getRecentDbPosts };

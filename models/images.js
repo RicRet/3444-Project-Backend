@@ -1,5 +1,6 @@
 const pool = require('../pool');
 
+// Function to insert an image
 const insertImage = async (imageUrl) => {
   try {
     const result = await pool.query(
@@ -14,6 +15,7 @@ const insertImage = async (imageUrl) => {
   }
 };
 
+// Function to remove an image
 const removeImage = async (imageId) => {
   try {
     const result = await pool.query(
@@ -27,4 +29,21 @@ const removeImage = async (imageId) => {
   }
 };
 
-module.exports = { insertImage, removeImage };
+// Function to get image by ID
+const getImageById = async (imageId) => {
+  try {
+    const result = await pool.query(
+      `SELECT image_url FROM eagleeye_schema.images WHERE image_id = $1`,
+      [imageId]
+    );
+    if (result.rows.length === 0) {
+      throw new Error('Image not found');
+    }
+    return result.rows[0]; // Return the image URL
+  } catch (error) {
+    console.error('Error fetching image by ID:', error);
+    throw error;
+  }
+};
+
+module.exports = { insertImage, removeImage, getImageById };

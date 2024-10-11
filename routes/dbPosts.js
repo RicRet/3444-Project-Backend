@@ -1,47 +1,27 @@
 const express = require('express');
-const { insertDbPost, removeDbPost } = require('../models/dbPosts.js'); // Import functions from the model
+const { insertDbPost, getRecentDbPosts } = require('../models/dbPosts.js');
 
 const router = express.Router();
 
 // Route to insert a new db post
 router.post('/', async (req, res) => {
-  const { imageId, heading, content, ownerId, edited } = req.body;
-
+  const { heading, content, ownerId, imageUrl } = req.body; // Include imageUrl
   try {
-    const newDbPost = await insertDbPost(imageId, heading, content, ownerId, edited);
-    res.status(201).json(newDbPost);
+    const newPost = await insertDbPost(heading, content, ownerId, imageUrl);
+    res.status(201).json(newPost);
   } catch (error) {
-    console.error('Error inserting db post:', error);
-    res.status(500).json({ message: 'Error inserting db post' });
+    res.status(500).json({ message: 'Error inserting post' });
   }
 });
 
-// Route to remove a db post by postId
-router.delete('/:postId', async (req, res) => {
-  const { postId } = req.params;
-
-  try {
-    const deletedDbPost = await removeDbPost(postId);
-    if (deletedDbPost) {
-      res.status(200).json({ message: 'Db post deleted', dbPost: deletedDbPost });
-    } else {
-      res.status(404).json({ message: 'Db post not found' });
-    }
-  } catch (error) {
-    console.error('Error removing db post:', error);
-    res.status(500).json({ message: 'Error removing db post' });
-  }
-});
-
+// Route to get recent db posts
 router.get('/recent', async (req, res) => {
-  const limit = parseInt(req.query.limit) || 10; // Default to 10 posts
-
+  const { limit } = req.query;
   try {
-    const recentPosts = await getRecentDbPosts(limit);
-    res.status(200).json(recentPosts);
+    const posts = await getRecentDbPosts(limit);
+    res.status(200).json(posts);
   } catch (error) {
-    console.error('Error fetching recent db posts:', error);
-    res.status(500).json({ message: 'Error fetching recent db posts' });
+    res.status(500).json({ message: 'Error fetching recent posts' });
   }
 });
 

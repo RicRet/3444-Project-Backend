@@ -1,5 +1,5 @@
 const express = require('express');
-const { insertImage, removeImage } = require('../models/images.js');
+const { insertImage, removeImage, getImageById } = require('../models/images.js');
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ router.post('/images', async (req, res) => {
 });
 
 // Route to remove an image by imageId
-router.delete('/images/:imageId', async (req, res) => { // Added '/images' prefix and colon before imageId
+router.delete('/images/:imageId', async (req, res) => {
   const { imageId } = req.params;
   try {
     const deletedImage = await removeImage(imageId);
@@ -26,6 +26,23 @@ router.delete('/images/:imageId', async (req, res) => { // Added '/images' prefi
     }
   } catch (error) {
     res.status(500).json({ message: 'Error removing image' });
+  }
+});
+
+// Route to fetch an image URL by imageId
+router.get('/images/:imageId', async (req, res) => {
+  console.log("Got to the route section"); // This should trigger if the route is hit
+  const { imageId } = req.params;
+  try {
+    const imageData = await getImageById(imageId);
+    if (!imageData) {
+      console.log(`Image not found for ID: ${imageId}`);
+      return res.status(404).json({ message: 'Image not found' });
+    }
+    res.status(200).json(imageData); // Return the image URL
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
