@@ -1,14 +1,13 @@
 const express = require('express');
-const { insertEventPost, removeEventPost } = require('../models/eventPosts.js'); // Importing the functions from the model
+const { insertEventPost, getRecentEventPosts } = require('../models/eventPosts.js'); // Importing the functions from the model
 
 const router = express.Router();
 
 // Route to insert a new event post
 router.post('/', async (req, res) => {
-  const { imageId, heading, content, ownerId, edited } = req.body;
-  
+  const { heading, content, ownerId, imageUrl } = req.body; // Include imageUrl
   try {
-    const newEventPost = await insertEventPost(imageId, heading, content, ownerId, edited);
+    const newEventPost = await insertEventPost(heading, content, ownerId, imageUrl);
     res.status(201).json(newEventPost);
   } catch (error) {
     console.error('Error inserting event post:', error);
@@ -16,20 +15,15 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Route to remove an event post by postId
-router.delete('/:postId', async (req, res) => {
-  const { postId } = req.params;
-
+// Route to get recent event posts
+router.get('/recent', async (req, res) => {
+  const { limit } = req.query;
   try {
-    const deletedEventPost = await removeEventPost(postId);
-    if (deletedEventPost) {
-      res.status(200).json({ message: 'Event post deleted', eventPost: deletedEventPost });
-    } else {
-      res.status(404).json({ message: 'Event post not found' });
-    }
+    const posts = await getRecentEventPosts(limit);
+    res.status(200).json(posts);
   } catch (error) {
-    console.error('Error removing event post:', error);
-    res.status(500).json({ message: 'Error removing event post' });
+    console.error('Error fetching recent event posts:', error);
+    res.status(500).json({ message: 'Error fetching recent event posts' });
   }
 });
 
