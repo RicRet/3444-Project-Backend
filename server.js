@@ -8,6 +8,8 @@ const imageRoutes = require('./routes/images.js');
 const eventPostRoutes = require('./routes/eventPosts.js');
 const dbPostRoutes = require('./routes/dbPosts.js');
 const salesPostRoutes = require('./routes/salesPosts.js');
+const salesRepliesRoutes = require('./routes/salesReplies.js')
+const dbRepliesRoutes = require('./routes/dbReplies.js')
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -22,6 +24,8 @@ app.use('/api/images', imageRoutes);
 app.use('/api/events', eventPostRoutes);
 app.use('/api/dbposts', dbPostRoutes);
 app.use('/api/sales', salesPostRoutes);
+app.use('/api/dbReplies', dbRepliesRoutes);
+app.use('/api/salesReplies', salesRepliesRoutes);
 
 // Start the server
 app.listen(PORT, () => {
