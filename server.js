@@ -24,7 +24,7 @@ app.use('/api/images', imageRoutes);
 app.use('/api/events', eventPostRoutes);
 app.use('/api/dbposts', dbPostRoutes);
 app.use('/api/sales', salesPostRoutes);
-app.use('/api/dbReplies', dbRepliesRoutes);
+//app.use('/api/dbReplies', dbRepliesRoutes);
 app.use('/api/salesReplies', salesRepliesRoutes);
 
 // Start the server
