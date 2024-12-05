@@ -1,13 +1,13 @@
 const pool = require('../pool'); // PostgreSQL connection pool
 
 // Function to insert a new sales post
-const insertSalesPost = async (imageId, heading, content, ownerId, edited = false) => {
+const insertSalesPost = async (heading, content, ownerId, imageUrl, edited = false) => {
   const query = `
-    INSERT INTO eagleeye_schema.sales_post (image_id, heading, content, owner_id, edited)
+    INSERT INTO eagleeye_schema.sales_posts (heading, content, owner_id, image_url, edited)
     VALUES ($1, $2, $3, $4, $5)
-    RETURNING *;`;
-    
-  const values = [imageId, heading, content, ownerId, edited];
+    RETURNING *;
+  `;
+  const values = [heading, content, ownerId, imageUrl, edited];
 
   try {
     const result = await pool.query(query, values);
@@ -18,23 +18,23 @@ const insertSalesPost = async (imageId, heading, content, ownerId, edited = fals
   }
 };
 
-// Function to remove a sales post by post_id
-const removeSalesPost = async (postId) => {
+// Function to get recent sales posts
+const getRecentSalesPosts = async (limit = 10) => {
   const query = `
-    DELETE FROM eagleeye_schema.sales_post
-    WHERE post_id = $1
-    RETURNING *;`;
-
+    SELECT * FROM eagleeye_schema.sales_posts
+    ORDER BY post_date DESC
+    LIMIT $1;
+  `;
   try {
-    const result = await pool.query(query, [postId]);
-    return result.rows[0]; // Return the deleted sales post (if any)
+    const result = await pool.query(query, [limit]);
+    return result.rows;
   } catch (err) {
-    console.error('Error removing sales post:', err);
+    console.error('Error fetching recent sales posts:', err);
     throw err;
   }
 };
 
 module.exports = {
   insertSalesPost,
-  removeSalesPost
+  getRecentSalesPosts,
 };
