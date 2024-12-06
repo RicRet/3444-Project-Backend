@@ -1,4 +1,3 @@
-const { resourceLimits } = require('worker_threads');
 const pool = require('../pool');
 
 const insertReply = async (parentID, content, ownerID) => {
@@ -15,15 +14,18 @@ const insertReply = async (parentID, content, ownerID) => {
     }
 };
 
-const getReplies = async (limit) => {
+const getReplies = async (parentSalesId, limit = 10) => {
     try {
-        const result = await pool.query(
-            'SELECT * FROM eagleeye_schema.db_replies ORDER BY post_date ASC LIMIT $1',
-            [limit]
+        const results = await pool.query(
+            `SELECT * FROM eagleeye_schema.db_replies
+             WHERE parent_db_id = $1
+             ORDER BY post_date ASC
+             LIMIT $2`,
+            [parentSalesId, limit]
         );
-        return result.rows;
+        return results.rows;
     } catch (error) {
-        console.error('Error fetching replies:', error);
+        console.error('Error fetching sales replies:', error);
         throw error;
     }
 };
